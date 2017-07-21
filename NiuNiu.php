@@ -78,7 +78,20 @@ class NiuNiu
     }
 
     /**
-     * 配置主播手牌
+     * 批量设置玩家手牌
+     * @param array $cards
+     * @return array
+     */
+    public function setPlayersCards(array $cards)
+    {
+        foreach ($cards as $player => $card) {
+            $this->setPlayerCard($player, $card);
+        }
+        return $this->playerCards;
+    }
+
+    /**
+     * 设置玩家手牌
      * @param string $playerName
      * @param array $cards
      */
