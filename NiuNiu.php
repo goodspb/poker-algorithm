@@ -141,12 +141,8 @@ class NiuNiu
         //洗牌
         shuffle($this->nowLeftCards);
         for ($i = 1; $i <= $playerNumbers; $i++) {
-            $playerCard = [];
             $needToRand = 5;
-            for ($j = 1; $j <= $needToRand; $j++) {
-                $playerCard[] = array_shift($this->nowLeftCards);
-            }
-            $this->playerCards["player_{$i}"] = $playerCard;
+            $this->playerCards["player_{$i}"] = array_splice($this->nowLeftCards, 0, $needToRand);
         }
         return $this->playerCards;
     }
