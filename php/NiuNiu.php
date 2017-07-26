@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * 牛牛游戏
+ * Class NiuNiu
+ */
 class NiuNiu
 {
     public static $cards = [

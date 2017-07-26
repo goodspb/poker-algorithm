@@ -1,8 +1,10 @@
 <?php
 
-include __DIR__ . 'NiuNiu.php';
+include __DIR__ . 'php/NiuNiu.php';
+include __DIR__ . 'php/Texas.php';
 
-$time = microtime(true);
+
+/*********  牛牛例子  *********/
 
 //创建实例
 $niu = new NiuNiu();
@@ -16,7 +18,6 @@ $niu->generate(3);
 //执行计算
 $result = $niu->execute();
 $players = $niu->getPlayersCards();
-$time2 = microtime(true);
 
 //输出剩余的牌
 //var_dump($niu->getLeftCards());
@@ -28,8 +29,17 @@ var_dump($players);
 echo '<pre>';
 print_r($result);
 
-//计算执行时间
-var_dump(round($time2 - $time, 4) . '秒');
 
-//计算占用内存
-var_dump(round(memory_get_usage() / (1024 * 1024), 4) . 'MB');
+/*********  德州扑克例子  *********/
+
+$texas = new Texas();
+
+//生成2个玩家的牌 和 公共牌
+$texas->generate(2);
+
+//输出玩家牌 和 公共牌
+var_dump($texas->getPlayersCards(), $texas->getPublicCards());
+
+//输出比较结果
+echo "<pre>";
+print_r($texas->comparePlayer($texas->getPlayersCards()['player_1'], $texas->getPlayersCards()['player_2']));
