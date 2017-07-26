@@ -94,12 +94,22 @@ class Texas
     }
 
     /**
-     * 获取公众牌
+     * 获取公共牌
      * @return array
      */
     public function getPublicCards()
     {
         return $this->publicCards;
+    }
+
+    /**
+     * 设置公共牌
+     * @param $publicCards
+     * @return mixed
+     */
+    public function setPublicCards($publicCards)
+    {
+        return $this->publicCards = $publicCards;
     }
 
     /**
