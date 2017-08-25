@@ -1,0 +1,7 @@
+ARG_ENABLE('poker_algorithm', 'poker_algorithm support', 'no');
+
+if (PHP_POKER_ALGORITHM != 'no') {
+	AC_DEFINE('HAVE_POKER_ALGORITHM', 1, 'poker_algorithm support enabled');
+
+	EXTENSION('poker_algorithm', 'poker_algorithm.c', null, '/DZEND_ENABLE_STATIC_TSRMLS_CACHE=1');
+}
