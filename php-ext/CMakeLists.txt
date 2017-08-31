@@ -2,10 +2,10 @@ cmake_minimum_required(VERSION 3.5)
 
 # Project name
 project(poker_algorithm)
-# Use C11
+# Use C99
 set(CMAKE_C_STANDARD 11)
 
-set(SOURCE_FILES poker_algorithm.c php_poker_algorithm.h)
+set(SOURCE_FILES poker_algorithm.c php_poker_algorithm.h poker_niuniu.c)
 
 add_executable(poker_algorithm ${SOURCE_FILES})
 
