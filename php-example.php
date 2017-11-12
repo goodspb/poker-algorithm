@@ -1,13 +1,12 @@
 <?php
 
-include __DIR__ . 'php/NiuNiu.php';
-include __DIR__ . 'php/Texas.php';
+include __DIR__ . 'vendor/autoload.php';
 
 
 /*********  牛牛例子  *********/
 
 //创建实例
-$niu = new NiuNiu();
+$niu = new \Goodspb\PokerAlgorithm\Games\NiuNiu();
 
 //随机生成3位玩家， 2种方式二选一，但是如果手工填入的话，需要自己管理随机性和牌的唯一性
 $niu->generate(3);
@@ -32,7 +31,7 @@ print_r($result);
 
 /*********  德州扑克例子  *********/
 
-$texas = new Texas();
+$texas = new \Goodspb\PokerAlgorithm\Games\Texas();
 
 //生成2个玩家的牌 和 公共牌
 $texas->generate(2);

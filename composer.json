@@ -1,0 +1,22 @@
+{
+    "name": "goodspb/poker-algorithm",
+    "description": "poker algorithm for php",
+    "type": "library",
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=5.5"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~5.7"
+    },
+    "autoload": {
+        "psr-4": {
+            "Goodspb\\PokerAlgorithm\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    }
+}

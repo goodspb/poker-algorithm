@@ -1,28 +1,14 @@
 <?php
+namespace Goodspb\PokerAlgorithm\Games;
+
+use Goodspb\PokerAlgorithm\Poker;
 
 /**
  * 德州扑克
  * Class Texas
  */
-class Texas
+class Texas extends Poker
 {
-    protected static $cards = [
-        //数字，花色
-        [1, 4], [1, 3], [1, 2], [1, 1],
-        [2, 4], [2, 3], [2, 2], [2, 1],
-        [3, 4], [3, 3], [3, 2], [3, 1],
-        [4, 4], [4, 3], [4, 2], [4, 1],
-        [5, 4], [5, 3], [5, 2], [5, 1],
-        [6, 4], [6, 3], [6, 2], [6, 1],
-        [7, 4], [7, 3], [7, 2], [7, 1],
-        [8, 4], [8, 3], [8, 2], [8, 1],
-        [9, 4], [9, 3], [9, 2], [9, 1],
-        [10, 4], [10, 3], [10, 2], [10, 1],
-        [11, 4], [11, 3], [11, 2], [11, 1],
-        [12, 4], [12, 3], [12, 2], [12, 1],
-        [13, 4], [13, 3], [13, 2], [13, 1],
-    ];
-
     /**
      * @var array 玩家牌
      */
@@ -43,54 +29,6 @@ class Texas
         $this->nowLeftCards = self::$cards;
         //洗牌
         shuffle($this->nowLeftCards);
-    }
-
-    /**
-     * 获取牌面数字
-     * @param $card
-     * @return mixed
-     */
-    protected function getCardNumber($card)
-    {
-        return $card[0];
-    }
-
-    /**
-     * 获取所有牌的牌面
-     * @param $cards
-     * @return array
-     */
-    protected function getCardNumbers($cards)
-    {
-        $numbers = [];
-        foreach ($cards as $card) {
-            $numbers[] = $this->getCardNumber($card);
-        }
-        return $numbers;
-    }
-
-    /**
-     * 获取花色
-     * @param $card
-     * @return mixed
-     */
-    protected function getCardColor($card)
-    {
-        return $card[1];
-    }
-
-    /**
-     * 获取所有牌的花色
-     * @param $cards
-     * @return array
-     */
-    protected function getCardColors($cards)
-    {
-        $colors = [];
-        foreach ($cards as $card) {
-            $colors[] = $this->getCardColor($card);
-        }
-        return $colors;
     }
 
     /**
@@ -470,34 +408,5 @@ class Texas
             }
             return $number < $nextNumber ? ($desc ? 1 : -1) : ($desc ? -1 : 1);
         });
-    }
-
-    /**
-     * 排列
-     * @param $array
-     * @param $number
-     * @return array
-     */
-    public function arrangement($array, $number = 5)
-    {
-        $result = [];
-        $count = count($array);
-        if ($number <= 0 || $number > $count) {
-            return $result;
-        }
-        for ($i = 0; $i < $count; $i++) {
-            $_temp = $array;
-            //每次取一个数字，并从数组中删除
-            $single = array_splice($_temp, $i, 1);
-            if ($number == 1) {
-                $result[] = $single;
-            } else {
-                $deep = $this->arrangement($_temp, $number - 1);
-                foreach ($deep as $deepItem) {
-                    $result[] = array_merge($single, $deepItem);
-                }
-            }
-        }
-        return $result;
     }
 }

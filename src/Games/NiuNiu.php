@@ -1,27 +1,14 @@
 <?php
+namespace Goodspb\PokerAlgorithm\Games;
+
+use Goodspb\PokerAlgorithm\Poker;
 
 /**
- * 牛牛游戏
+ * 牛牛
  * Class NiuNiu
  */
-class NiuNiu
+class NiuNiu extends Poker
 {
-    public static $cards = [
-        //数字，花色，牛仔中的大小
-        [1, 4, 1], [1, 3, 1], [1, 2, 1], [1, 1, 1],
-        [2, 4, 2], [2, 3, 2], [2, 2, 2], [2, 1, 2],
-        [3, 4, 3], [3, 3, 3], [3, 2, 3], [3, 1, 3],
-        [4, 4, 4], [4, 3, 4], [4, 2, 4], [4, 1, 4],
-        [5, 4, 5], [5, 3, 5], [5, 2, 5], [5, 1, 5],
-        [6, 4, 6], [6, 3, 6], [6, 2, 6], [6, 1, 6],
-        [7, 4, 7], [7, 3, 7], [7, 2, 7], [7, 1, 7],
-        [8, 4, 8], [8, 3, 8], [8, 2, 8], [8, 1, 8],
-        [9, 4, 9], [9, 3, 9], [9, 2, 9], [9, 1, 9],
-        [10, 4, 10], [10, 3, 10], [10, 2, 10], [10, 1, 10],
-        [11, 4, 10], [11, 3, 10], [11, 2, 10], [11, 1, 10],
-        [12, 4, 10], [12, 3, 10], [12, 2, 10], [12, 1, 10],
-        [13, 4, 10], [13, 3, 10], [13, 2, 10], [13, 1, 10],
-    ];
 
     protected $nowLeftCards;
     protected $playersNumber;
@@ -34,33 +21,14 @@ class NiuNiu
     }
 
     /**
-     * 获取牌面数字
-     * @param $card
-     * @return mixed
-     */
-    protected function getCardNumber($card)
-    {
-        return $card[0];
-    }
-
-    /**
-     * 获取花色
-     * @param $card
-     * @return mixed
-     */
-    protected function getCardColor($card)
-    {
-        return $card[1];
-    }
-
-    /**
      * 获取牛牛中数值
      * @param $card
      * @return mixed
      */
     protected function getCardValue($card)
     {
-        return $card[2];
+        $cardNumber = $this->getCardNumber($card);
+        return $cardNumber < 10 ? $cardNumber : 10;
     }
 
     /**
@@ -309,34 +277,5 @@ class NiuNiu
             }
             return $value[0] < $next[0] ? 1 : -1;
         });
-    }
-
-    /**
-     * 排列
-     * @param $array
-     * @param $number
-     * @return array
-     */
-    protected function arrangement($array, $number = 3)
-    {
-        $result = [];
-        $count = count($array);
-        if ($number <= 0 || $number > $count) {
-            return $result;
-        }
-        for ($i = 0; $i < $count; $i++) {
-            $_temp = $array;
-            //每次取一个数字，并从数组中删除
-            $single = array_splice($_temp, $i, 1);
-            if ($number == 1) {
-                $result[] = $single;
-            } else {
-                $deep = $this->arrangement($_temp, $number - 1);
-                foreach ($deep as $deepItem) {
-                    $result[] = array_merge($single, $deepItem);
-                }
-            }
-        }
-        return $result;
     }
 }
