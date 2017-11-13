@@ -2,6 +2,7 @@
 namespace Goodspb\PokerAlgorithm\Games;
 
 use Goodspb\PokerAlgorithm\Poker;
+use Goodspb\PokerAlgorithm\Traits\CardWithValue;
 
 /**
  * 牛牛
@@ -9,27 +10,10 @@ use Goodspb\PokerAlgorithm\Poker;
  */
 class NiuNiu extends Poker
 {
+    use CardWithValue;
 
-    protected $nowLeftCards;
     protected $playersNumber;
     protected $playerCards = [];
-
-    public function __construct()
-    {
-        //创建剩余的牌
-        $this->nowLeftCards = self::$cards;
-    }
-
-    /**
-     * 获取牛牛中数值
-     * @param $card
-     * @return mixed
-     */
-    protected function getCardValue($card)
-    {
-        $cardNumber = $this->getCardNumber($card);
-        return $cardNumber < 10 ? $cardNumber : 10;
-    }
 
     /**
      * 获取剩余的牌
@@ -37,7 +21,7 @@ class NiuNiu extends Poker
      */
     public function getLeftCards()
     {
-        return $this->nowLeftCards;
+        return $this->round;
     }
 
     /**
@@ -73,7 +57,7 @@ class NiuNiu extends Poker
         foreach ($cards as $card) {
             $hasThisCard = false;
             $unsetKey = null;
-            foreach ($this->nowLeftCards as $nowLeftCardKey => $nowLeftCard) {
+            foreach ($this->round as $nowLeftCardKey => $nowLeftCard) {
                 if ($card == $nowLeftCard) {
                     $hasThisCard = true;
                     $unsetKey = $nowLeftCardKey;
@@ -81,7 +65,7 @@ class NiuNiu extends Poker
             }
             if ($hasThisCard) {
                 $playerCards[] = $card;
-                unset($this->nowLeftCards[$unsetKey]);
+                unset($this->round[$unsetKey]);
             }
         }
         $this->playerCards[$playerName] = $playerCards;
@@ -94,12 +78,12 @@ class NiuNiu extends Poker
      */
     public function setExclude(array $value)
     {
-        foreach ($this->nowLeftCards as $key => $nowLeftCard) {
+        foreach ($this->round as $key => $nowLeftCard) {
             if ($nowLeftCard == $value) {
-                unset($this->nowLeftCards[$key]);
+                unset($this->round[$key]);
             }
         }
-        return $this->nowLeftCards;
+        return $this->round;
     }
 
     /**
@@ -111,10 +95,10 @@ class NiuNiu extends Poker
     {
         $this->playerCards = [];
         //洗牌
-        shuffle($this->nowLeftCards);
+        $this->shuffle();
         for ($i = 1; $i <= $playerNumbers; $i++) {
             $needToRand = 5;
-            $this->playerCards["player_{$i}"] = array_splice($this->nowLeftCards, 0, $needToRand);
+            $this->playerCards["player_{$i}"] = array_splice($this->round, 0, $needToRand);
         }
         return $this->playerCards;
     }
@@ -128,7 +112,7 @@ class NiuNiu extends Poker
         $result = [];
         foreach ($this->playerCards as $player => &$playerCard) {
             //按照从大到小排序
-            $this->cardsSort($playerCard);
+            $this->sortCard($playerCard);
             $result[] = [
                 'name' => $player,
                 'shape' => $this->judge($playerCard),
@@ -248,34 +232,5 @@ class NiuNiu extends Poker
             }
         }
         return $result;
-    }
-
-    /**
-     * 卡牌求和
-     * @param $cards
-     * @return int
-     */
-    protected function cardsSum($cards)
-    {
-        $sum = 0;
-        foreach ($cards as $card) {
-            $sum += $this->getCardValue($card);
-        }
-        return $sum;
-    }
-
-    /**
-     * 从大到小的排序，包括牌面、花色
-     * @param $cards
-     */
-    protected function cardsSort(&$cards)
-    {
-        usort($cards, function($value, $next) {
-            //先判断牌面, 当牌面相同，再判断花色
-            if ($value[0] == $next[0]) {
-                return $value[1] == $next[1] ? 0 : ($value[1] < $next[1] ? 1 : -1);
-            }
-            return $value[0] < $next[0] ? 1 : -1;
-        });
     }
 }

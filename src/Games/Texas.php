@@ -19,16 +19,10 @@ class Texas extends Poker
      */
     protected $publicCards;
 
-    /**
-     * @var array 剩余牌堆
-     */
-    protected $nowLeftCards;
-
-    public function __construct()
+    public function __construct($autoBegin = true)
     {
-        $this->nowLeftCards = self::$cards;
-        //洗牌
-        shuffle($this->nowLeftCards);
+        parent::__construct($autoBegin);
+        $this->shuffle();
     }
 
     /**
@@ -67,11 +61,11 @@ class Texas extends Poker
      */
     public function generate($playerNumbers = 2, $needPublic = true)
     {
-        $needPublic and $this->publicCards = array_splice($this->nowLeftCards, 0, 5);
+        $needPublic and $this->publicCards = array_splice($this->round, 0, 5);
         $beginAt = count($this->playerCards);
         for ($i = 1; $i <= $playerNumbers; $i++) {
             $player = "player_" . ($beginAt + $i);
-            $this->playerCards[$player] = array_splice($this->nowLeftCards, 0, 2);
+            $this->playerCards[$player] = array_splice($this->round, 0, 2);
         }
     }
 
@@ -385,28 +379,5 @@ class Texas extends Poker
             }
         }
         return $result;
-    }
-
-    /**
-     * 根据牌面，花色的大小从大到小排序
-     * @param array  $cards 牌
-     * @param bool   $sortColor 是否比较花色
-     * @param string $sort 降序（desc)，还是升序(asc)
-     */
-    protected function sortCard(array &$cards, $sortColor = true, $sort = 'desc')
-    {
-        $desc = strtolower($sort) == 'desc';
-        usort($cards, function ($value, $next) use ($sortColor, $desc) {
-            $number = $this->getCardNumber($value);
-            $nextNumber = $this->getCardNumber($next);
-            if ($number == $nextNumber) {
-                // 比较花色
-                if ($sortColor) {
-                    return $this->getCardColor($value) < $this->getCardColor($next) ? ($desc ? 1 : -1) : ($desc ? -1 : 1);
-                }
-                return 0;
-            }
-            return $number < $nextNumber ? ($desc ? 1 : -1) : ($desc ? -1 : 1);
-        });
     }
 }

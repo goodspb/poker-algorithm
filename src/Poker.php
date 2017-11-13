@@ -8,36 +8,98 @@ abstract class Poker
     const COLOR_CLUB = 2;       //梅花
     const COLOR_DIAMOND = 1;    //方块
 
-    const CARD_K = 13;
-    const CARD_Q = 12;
-    const CARD_J = 11;
-    const CARD_10 = 10;
-    const CARD_9 = 9;
-    const CARD_8 = 8;
-    const CARD_7 = 7;
-    const CARD_6 = 6;
-    const CARD_5 = 5;
-    const CARD_4 = 4;
-    const CARD_3 = 3;
-    const CARD_2 = 2;
-    const CARD_A = 1;
-
-    protected static $cards = [
-        //数字，花色
-        [self::CARD_A, self::COLOR_SPADE], [self::CARD_A, self::COLOR_HEART], [self::CARD_A, self::COLOR_CLUB], [self::CARD_A, self::COLOR_DIAMOND],
-        [self::CARD_2, self::COLOR_SPADE], [self::CARD_2, self::COLOR_HEART], [self::CARD_2, self::COLOR_CLUB], [self::CARD_2, self::COLOR_DIAMOND],
-        [self::CARD_3, self::COLOR_SPADE], [self::CARD_3, self::COLOR_HEART], [self::CARD_3, self::COLOR_CLUB], [self::CARD_3, self::COLOR_DIAMOND],
-        [self::CARD_4, self::COLOR_SPADE], [self::CARD_4, self::COLOR_HEART], [self::CARD_4, self::COLOR_CLUB], [self::CARD_4, self::COLOR_DIAMOND],
-        [self::CARD_5, self::COLOR_SPADE], [self::CARD_5, self::COLOR_HEART], [self::CARD_5, self::COLOR_CLUB], [self::CARD_5, self::COLOR_DIAMOND],
-        [self::CARD_6, self::COLOR_SPADE], [self::CARD_6, self::COLOR_HEART], [self::CARD_6, self::COLOR_CLUB], [self::CARD_6, self::COLOR_DIAMOND],
-        [self::CARD_7, self::COLOR_SPADE], [self::CARD_7, self::COLOR_HEART], [self::CARD_7, self::COLOR_CLUB], [self::CARD_7, self::COLOR_DIAMOND],
-        [self::CARD_8, self::COLOR_SPADE], [self::CARD_8, self::COLOR_HEART], [self::CARD_8, self::COLOR_CLUB], [self::CARD_8, self::COLOR_DIAMOND],
-        [self::CARD_9, self::COLOR_SPADE], [self::CARD_9, self::COLOR_HEART], [self::CARD_9, self::COLOR_CLUB], [self::CARD_9, self::COLOR_DIAMOND],
-        [self::CARD_10, self::COLOR_SPADE], [self::CARD_10, self::COLOR_HEART], [self::CARD_10, self::COLOR_CLUB], [self::CARD_10, self::COLOR_DIAMOND],
-        [self::CARD_J, self::COLOR_SPADE], [self::CARD_J, self::COLOR_HEART], [self::CARD_J, self::COLOR_CLUB], [self::CARD_J, self::COLOR_DIAMOND],
-        [self::CARD_Q, self::COLOR_SPADE], [self::CARD_Q, self::COLOR_HEART], [self::CARD_Q, self::COLOR_CLUB], [self::CARD_Q, self::COLOR_DIAMOND],
-        [self::CARD_K, self::COLOR_SPADE], [self::CARD_K, self::COLOR_HEART], [self::CARD_K, self::COLOR_CLUB], [self::CARD_K, self::COLOR_DIAMOND],
+    public static $colors = [
+        self::COLOR_SPADE,
+        self::COLOR_HEART,
+        self::COLOR_CLUB,
+        self::COLOR_DIAMOND,
     ];
+
+    const NUMBER_K = 13;
+    const NUMBER_Q = 12;
+    const NUMBER_J = 11;
+    const NUMBER_10 = 10;
+    const NUMBER_9 = 9;
+    const NUMBER_8 = 8;
+    const NUMBER_7 = 7;
+    const NUMBER_6 = 6;
+    const NUMBER_5 = 5;
+    const NUMBER_4 = 4;
+    const NUMBER_3 = 3;
+    const NUMBER_2 = 2;
+    const NUMBER_A = 1;
+
+    public static $numbers = [
+        self::NUMBER_K,
+        self::NUMBER_Q,
+        self::NUMBER_J,
+        self::NUMBER_10,
+        self::NUMBER_9,
+        self::NUMBER_8,
+        self::NUMBER_7,
+        self::NUMBER_6,
+        self::NUMBER_5,
+        self::NUMBER_4,
+        self::NUMBER_3,
+        self::NUMBER_2,
+        self::NUMBER_A,
+    ];
+
+    /**
+     * 一副牌
+     * @var array
+     */
+    protected $pack;
+
+    /**
+     * 当前牌堆
+     * @var array
+     */
+    protected $round = null;
+
+    public function __construct($autoBegin = true)
+    {
+        $this->pack = $this->generatePack();
+        if ($autoBegin) {
+            $this->begin();
+        }
+    }
+
+    /**
+     * 开始一局
+     */
+    public function begin()
+    {
+        if (is_null($this->round)) {
+            $this->round = $this->pack;
+        }
+    }
+
+    /**
+     * 创建一副牌
+     * @return array
+     */
+    protected function generatePack()
+    {
+        $pack = [];
+        foreach(self::$numbers as $number) {
+            foreach (self::$colors as $color) {
+                $pack[] = [
+                    'number' => $number,
+                    'color' => $color
+                ];
+            }
+        }
+        return $pack;
+    }
+
+    /**
+     * 洗牌
+     */
+    public function shuffle()
+    {
+        shuffle($this->round);
+    }
 
     /**
      * 获取牌面数字
@@ -46,7 +108,7 @@ abstract class Poker
      */
     protected function getCardNumber($card)
     {
-        return $card[0];
+        return $card['number'];
     }
 
     /**
@@ -56,7 +118,7 @@ abstract class Poker
      */
     protected function getCardColor($card)
     {
-        return $card[1];
+        return $card['color'];
     }
 
     /**
@@ -85,6 +147,29 @@ abstract class Poker
             $colors[] = $this->getCardColor($card);
         }
         return $colors;
+    }
+
+    /**
+     * 根据牌面，花色的大小从大到小排序
+     * @param array  $cards 牌
+     * @param bool   $sortColor 是否比较花色
+     * @param string $sort 降序（desc)，还是升序(asc)
+     */
+    protected function sortCard(array &$cards, $sortColor = true, $sort = 'desc')
+    {
+        $desc = strtolower($sort) == 'desc';
+        usort($cards, function ($value, $next) use ($sortColor, $desc) {
+            $number = $this->getCardNumber($value);
+            $nextNumber = $this->getCardNumber($next);
+            if ($number == $nextNumber) {
+                // 比较花色
+                if ($sortColor) {
+                    return $this->getCardColor($value) < $this->getCardColor($next) ? ($desc ? 1 : -1) : ($desc ? -1 : 1);
+                }
+                return 0;
+            }
+            return $number < $nextNumber ? ($desc ? 1 : -1) : ($desc ? -1 : 1);
+        });
     }
 
     /**
