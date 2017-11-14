@@ -57,6 +57,11 @@ abstract class Poker
      */
     protected $round = null;
 
+    /**
+     * @var array 玩家牌
+     */
+    protected $playerCards = [];
+
     public function __construct($autoBegin = true)
     {
         $this->pack = $this->generatePack();
@@ -73,6 +78,8 @@ abstract class Poker
         if (is_null($this->round)) {
             $this->round = $this->pack;
         }
+        //洗牌
+        $this->shuffle();
     }
 
     /**
@@ -91,6 +98,45 @@ abstract class Poker
             }
         }
         return $pack;
+    }
+
+    /**
+     * 随机生成玩家牌
+     * @param int $playerNumbers
+     * @param int $perCardsNumber
+     * @return array
+     */
+    public function generate($playerNumbers, $perCardsNumber = 5)
+    {
+        $beginAt = count($this->playerCards);
+        for ($i = 1; $i <= $playerNumbers; $i++) {
+            $this->playerCards[$beginAt + $i] = array_splice($this->round, 0, $perCardsNumber);
+        }
+        return $this->playerCards;
+    }
+
+    /**
+     * 获取剩余的牌
+     * @return array
+     */
+    public function getRound()
+    {
+        return $this->round;
+    }
+
+    /**
+     * 设置一张忽略的牌
+     * @param array $card
+     * @return array
+     */
+    public function setExclude(array $card)
+    {
+        foreach ($this->round as $key => $nowLeftCard) {
+            if ($nowLeftCard == $card) {
+                unset($this->round[$key]);
+            }
+        }
+        return $this->round;
     }
 
     /**
@@ -150,8 +196,56 @@ abstract class Poker
     }
 
     /**
+     * 获取玩家牌
+     * @param string $player 玩家 key
+     * @return array
+     */
+    public function getPlayersCards($player = null)
+    {
+        return is_null($player) ? $this->playerCards : (isset($this->playerCards[$player]) ? $this->playerCards[$player] : []);
+    }
+
+    /**
+     * 批量设置玩家手牌
+     * @param array $cards
+     * @return array
+     */
+    public function setPlayersCards(array $cards)
+    {
+        foreach ($cards as $player => $card) {
+            $this->setPlayerCard($player, $card);
+        }
+        return $this->playerCards;
+    }
+
+    /**
+     * 设置玩家手牌
+     * @param string $player 玩家标识
+     * @param array $cards
+     */
+    public function setPlayerCard($player, array $cards)
+    {
+        $playerCards = [];
+        foreach ($cards as $card) {
+            $hasThisCard = false;
+            $unsetKey = null;
+            foreach ($this->round as $nowLeftCardKey => $nowLeftCard) {
+                if ($card == $nowLeftCard) {
+                    $hasThisCard = true;
+                    $unsetKey = $nowLeftCardKey;
+                }
+            }
+            if ($hasThisCard) {
+                $playerCards[] = $card;
+                unset($this->round[$unsetKey]);
+            }
+        }
+        $this->playerCards[$player] = $playerCards;
+    }
+
+    /**
      * 根据牌面，花色的大小从大到小排序
-     * @param array  $cards 牌
+     * @param array  $cards 一手牌
      * @param bool   $sortColor 是否比较花色
      * @param string $sort 降序（desc)，还是升序(asc)
      */
@@ -170,6 +264,25 @@ abstract class Poker
             }
             return $number < $nextNumber ? ($desc ? 1 : -1) : ($desc ? -1 : 1);
         });
+    }
+
+    /**
+     * 比较2张牌的大小，一次比较单牌的大小，如单牌牌面都相同，比较最大单牌的花色
+     * @param $firstCards
+     * @param $secondCards
+     * @return int 返回 1 表示前者比后者大，返回 -1 表示前者比后者细
+     */
+    public function compareWithNumberAndColor($firstCards, $secondCards)
+    {
+        foreach ($firstCards as $key => $value) {
+            if (($firstNumber = $this->getCardNumber($value)) < ($secondNumber = $this->getCardNumber($secondCards[$key]))) {
+                return 1;
+            } elseif ($firstNumber > $secondNumber) {
+                return -1;
+            }
+        }
+        //当所有的牌都是等于的时候，比较最大单牌的花色
+        return $this->getCardColor($firstCards[0]) < $this->getCardColor($secondCards[0]) ? 1 : -1;
     }
 
     /**

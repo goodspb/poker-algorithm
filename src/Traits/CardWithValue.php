@@ -2,7 +2,7 @@
 namespace Goodspb\PokerAlgorithm\Traits;
 
 /**
- * 排当中出现值，且规则如下
+ * 牌当中出现值，且规则如下
  * 1-10 对应的值为 10
  * JQK 也对应为 10
  *
@@ -23,16 +23,26 @@ trait CardWithValue
     }
 
     /**
+     * 获取所有牌的数值
+     * @param $cards
+     * @return array
+     */
+    protected function getCardValues($cards)
+    {
+        $values = [];
+        foreach ($cards as $card) {
+            $values[] = $this->getCardValue($card);
+        }
+        return $values;
+    }
+
+    /**
      * 卡牌求和
      * @param $cards
      * @return int
      */
     protected function cardsSum($cards)
     {
-        $sum = 0;
-        foreach ($cards as $card) {
-            $sum += $this->getCardValue($card);
-        }
-        return $sum;
+        return array_sum($this->getCardValues($cards));
     }
 }

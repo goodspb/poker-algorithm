@@ -12,97 +12,6 @@ class NiuNiu extends Poker
 {
     use CardWithValue;
 
-    protected $playersNumber;
-    protected $playerCards = [];
-
-    /**
-     * 获取剩余的牌
-     * @return array
-     */
-    public function getLeftCards()
-    {
-        return $this->round;
-    }
-
-    /**
-     * 获取玩家的牌
-     * @return array
-     */
-    public function getPlayersCards()
-    {
-        return $this->playerCards;
-    }
-
-    /**
-     * 批量设置玩家手牌
-     * @param array $cards
-     * @return array
-     */
-    public function setPlayersCards(array $cards)
-    {
-        foreach ($cards as $player => $card) {
-            $this->setPlayerCard($player, $card);
-        }
-        return $this->playerCards;
-    }
-
-    /**
-     * 设置玩家手牌
-     * @param string $playerName
-     * @param array $cards
-     */
-    public function setPlayerCard($playerName, array $cards)
-    {
-        $playerCards = [];
-        foreach ($cards as $card) {
-            $hasThisCard = false;
-            $unsetKey = null;
-            foreach ($this->round as $nowLeftCardKey => $nowLeftCard) {
-                if ($card == $nowLeftCard) {
-                    $hasThisCard = true;
-                    $unsetKey = $nowLeftCardKey;
-                }
-            }
-            if ($hasThisCard) {
-                $playerCards[] = $card;
-                unset($this->round[$unsetKey]);
-            }
-        }
-        $this->playerCards[$playerName] = $playerCards;
-    }
-
-    /**
-     * 设置忽略的牌
-     * @param array $value
-     * @return array
-     */
-    public function setExclude(array $value)
-    {
-        foreach ($this->round as $key => $nowLeftCard) {
-            if ($nowLeftCard == $value) {
-                unset($this->round[$key]);
-            }
-        }
-        return $this->round;
-    }
-
-    /**
-     * 随机生成玩家 & 牌
-     * @param int $playerNumbers
-     * @return array
-     */
-    public function generate($playerNumbers = 3)
-    {
-        $this->playerCards = [];
-        //洗牌
-        $this->shuffle();
-        for ($i = 1; $i <= $playerNumbers; $i++) {
-            $needToRand = 5;
-            $this->playerCards["player_{$i}"] = array_splice($this->round, 0, $needToRand);
-        }
-        return $this->playerCards;
-    }
-
     /**
      * 执行计算
      * @return array
@@ -133,29 +42,10 @@ class NiuNiu extends Poker
         usort($result, function($value, $next) {
             //当牌型相同的时候，比较牌的大小和卡
             if ($value['shape'] == $next['shape']) {
-                return $this->compareNumberAndColor($value['cards'], $next['cards']);
+                return $this->compareWithNumberAndColor($value['cards'], $next['cards']);
             }
             return $value['shape'] < $next['shape'] ? 1 : -1;
         });
-    }
-
-    /**
-     * 比较2张牌的大小，一次比较单牌的大小，如单牌牌面都相同，比较最大单牌的花色
-     * @param $first
-     * @param $second
-     * @return bool|int
-     */
-    public function compareNumberAndColor($first, $second)
-    {
-        foreach ($first as $key => $value) {
-            if (($firstNumber = $this->getCardNumber($value)) < ($secondNumber = $this->getCardNumber($second[$key]))) {
-                return 1;
-            } elseif ($firstNumber > $secondNumber) {
-                return -1;
-            }
-        }
-        //当所有的牌都是等于的时候，比较最大单牌的花色
-        return $this->getCardColor($first[0]) < $this->getCardColor($second[0]) ? 1 : -1;
     }
 
     /**

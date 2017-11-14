@@ -9,21 +9,11 @@ use Goodspb\PokerAlgorithm\Poker;
  */
 class Texas extends Poker
 {
-    /**
-     * @var array 玩家牌
-     */
-    protected $playerCards = [];
 
     /**
      * @var array 公共牌
      */
     protected $publicCards;
-
-    public function __construct($autoBegin = true)
-    {
-        parent::__construct($autoBegin);
-        $this->shuffle();
-    }
 
     /**
      * 获取公共牌
@@ -45,28 +35,26 @@ class Texas extends Poker
     }
 
     /**
-     * 获取玩家牌
-     * @param string $player 玩家 key
+     * 随机生成玩家牌 & 公共牌
+     * @param int $playerNumbers
+     * @param int $perCardsNumber
+     * @param bool $needPublic
      * @return array
      */
-    public function getPlayersCards($player = null)
+    public function generate($playerNumbers, $perCardsNumber = 2, $needPublic = true)
     {
-        return is_null($player) ? $this->playerCards : (isset($this->playerCards[$player]) ? $this->playerCards[$player] : []);
+        $needPublic and $this->generatePublicCard();
+        return parent::generate($playerNumbers, $perCardsNumber);
     }
 
     /**
-     * 随机生成玩家牌 & 公共牌
-     * @param int  $playerNumbers 玩家数量
-     * @param bool $needPublic 是否生成公共牌
+     * 创建公共牌
+     * @param int $cardsNumber 公共牌数量
+     * @return array
      */
-    public function generate($playerNumbers = 2, $needPublic = true)
+    public function generatePublicCard($cardsNumber = 5)
     {
-        $needPublic and $this->publicCards = array_splice($this->round, 0, 5);
-        $beginAt = count($this->playerCards);
-        for ($i = 1; $i <= $playerNumbers; $i++) {
-            $player = "player_" . ($beginAt + $i);
-            $this->playerCards[$player] = array_splice($this->round, 0, 2);
-        }
+        return $this->publicCards = array_splice($this->round, 0, $cardsNumber);
     }
 
     /**
