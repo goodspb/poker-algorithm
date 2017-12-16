@@ -56,7 +56,8 @@ class SanGong extends Poker
                 'shape' => $this->judge($playerCard),   //判断牌型
             ];
         }
-        return $this->sortResult($result);
+        $this->sortResult($result);
+        return $result;
     }
 
     public function sortResult(&$result)
